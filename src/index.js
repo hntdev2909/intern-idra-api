@@ -1,9 +1,9 @@
 const morgan = require('morgan');
 const express = require('express');
 
+require('dotenv').config();
 const db = require('./config/db');
 const app = express();
-const port = 3030 || 8080;
 
 const route = require('./routes');
 
@@ -23,6 +23,9 @@ app.use(
 // Route
 route(app);
 
-app.listen(port, () => {
-	console.log('App listening on port 3000');
+// Port
+var serverPort = process.env.PORT || 8080;
+
+app.listen(serverPort, () => {
+	console.log(`Listening on port ${serverPort}`);
 });
