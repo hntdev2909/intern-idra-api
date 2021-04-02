@@ -3,7 +3,7 @@ const express = require('express');
 
 const db = require('./config/db');
 const app = express();
-const port = 3030;
+const port = 3030 || 8080;
 
 const route = require('./routes');
 
