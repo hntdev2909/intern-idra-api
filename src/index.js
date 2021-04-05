@@ -1,5 +1,6 @@
 const morgan = require('morgan');
 const express = require('express');
+const cors = require('cors');
 
 const db = require('./config/db');
 const app = express();
@@ -7,10 +8,13 @@ const app = express();
 require('dotenv').config({ path: __dirname + '/./.env' });
 const route = require('./routes');
 
-// connect DB;
+// Config Cors
+app.use(cors());
+
+// Connect DB;
 db.connect();
 
-// log Http
+// Log Http
 app.use(morgan('combined'));
 
 app.use(express.json());
