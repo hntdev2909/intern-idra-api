@@ -1,10 +1,10 @@
 const morgan = require('morgan');
 const express = require('express');
 
-require('dotenv').config();
 const db = require('./config/db');
 const app = express();
 
+require('dotenv').config({ path: __dirname + '/./.env' });
 const route = require('./routes');
 
 // connect DB;
