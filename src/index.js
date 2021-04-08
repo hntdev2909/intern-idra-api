@@ -20,7 +20,7 @@ const app = express();
 
 require('dotenv').config({ path: __dirname + '/./.env' });
 const route = require('./routes');
-const { ConnectionStates } = require('mongoose');
+// const { ConnectionStates } = require('mongoose');
 
 // Config Cors
 app.use(cors());
