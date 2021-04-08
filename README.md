@@ -1,12 +1,10 @@
-# Task
-
-- Homepage
-- DB todoser, todolist
-- add, edit, delete : todoser, todolist, (add: form)
-
 # Idra Intern API
 
 - A project is built to call API by Node.js
+- Project used to call API of 3 websites:
+  - [Todo list](https://github.com/hntdev2909/todo-list)
+  - [Count down](https://github.com/hntdev2909/countdown)
+  - [Trello Board](https://github.com/hntdev2909/task-management-app)
 
 ## Install, package and libraries
 
@@ -20,6 +18,7 @@
 ## Usage
 
 [Live demo](https://server-intern-idra.herokuapp.com/)
+-> You should install extension [JSON Viewer](https://chrome.google.com/webstore/detail/json-viewer/gbmdgpbipfallnflgajpaliibnhdgobh?hl=vi) when you want to read it
 
 --
 Local
