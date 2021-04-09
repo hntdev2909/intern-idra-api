@@ -4,6 +4,7 @@ const router = express.Router();
 const todoListController = require('../app/controllers/TodoListController');
 
 router.get('/', todoListController.index);
+router.get('/filters/:type', todoListController.filters);
 router.post('/create', todoListController.create);
 router.put('/change', todoListController.change);
 router.put('/:id', todoListController.edit);

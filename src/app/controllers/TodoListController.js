@@ -8,6 +8,27 @@ class TodoListController {
 			.catch(next);
 	}
 
+	// [GET] /todolist/filtertype
+	filters(req, res) {
+		let { type } = req.params;
+		if (type === 'all') {
+			Todolist.find({})
+				.then((response) => res.send(response))
+				.catch((err) => console.log(err));
+		} else {
+			let typeBool;
+			if (type === 'active') {
+				typeBool = false;
+			} else if (type === 'completed') {
+				typeBool = true;
+			}
+
+			Todolist.find({ isCompleted: typeBool })
+				.then((response) => res.send(response))
+				.catch((err) => console.log(err));
+		}
+	}
+
 	// [POST] /todolist/create
 	create(req, res) {
 		const newTask = new Todolist(req.body);
