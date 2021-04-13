@@ -26,19 +26,19 @@ class TaskManageController {
 
 		task
 			.save()
-			.then((response) => res.send(task))
+			.then((response) => {
+				Columns.findOneAndUpdate(
+					{ columnName: 'columnOne' },
+					{
+						$push: {
+							tasksId: { id },
+						},
+					}
+				)
+					.then((response) => res.send(task))
+					.catch((err) => console.log(err));
+			})
 			.catch('Error');
-
-		Columns.findOneAndUpdate(
-			{ columnName: 'columnOne' },
-			{
-				$push: {
-					tasksId: id,
-				},
-			}
-		)
-			.then((res) => console.log(res))
-			.catch((err) => console.log(err));
 	};
 
 	// [CREATE] /create/columnorder --- DONE
@@ -63,11 +63,17 @@ class TaskManageController {
 
 	// [PUT] /tasks/:id // DONE
 	editTasks(req, res) {
-		console.log(req.params.id, req.body);
-		Tasks.findByIdAndUpdate(req.params.id, {
-			newData: req.body.task.newData,
-		})
-			.then((res) => console.log('Updated', res))
+		let id = req.params.id;
+		Tasks.findByIdAndUpdate(
+			id,
+			{
+				newData: req.body.task.newData,
+			},
+			{ new: true }
+		)
+			.then((response) => {
+				res.send(response);
+			})
 			.catch((err) => console.log('Error', err));
 	}
 
@@ -78,56 +84,87 @@ class TaskManageController {
 
 		let start, finish;
 
-		for (let column of cols) {
-			if (column._id == source.droppableId) {
-				start = column;
+		if (
+			source &&
+			destination &&
+			source.droppableId &&
+			destination.droppableId
+		) {
+			if (source.droppableId === destination.droppableId) {
+				for (let column of cols) {
+					if (column._id == source.droppableId) {
+						start = column;
+					}
+				}
+			} else {
+				for (let column of cols) {
+					if (column._id == source.droppableId) {
+						start = column;
+					}
+
+					if (column._id == destination.droppableId) {
+						finish = column;
+					}
+				}
 			}
 
-			if (column._id == destination.droppableId) {
-				finish = column;
-			}
-		}
+			if (start === finish) {
+				start.tasksId.splice(source.index, 1);
+				start.tasksId.splice(destination.index, 0, { id: draggableId });
+			} else {
+				start.tasksId.splice(source.index, 1);
 
-		if (start === finish) {
-			start.tasksId.splice(source.index, 1);
-			start.tasksId.splice(destination.index, 0, draggableId);
+				finish.tasksId.splice(destination.index, 0, { id: draggableId });
+			}
+
+			Columns.findByIdAndUpdate(start._id, { tasksId: start.tasksId })
+				.then(() => {
+					if (start !== finish) {
+						Columns.findByIdAndUpdate(finish._id, { tasksId: finish.tasksId })
+							.then(() => {
+								console.log('Changed');
+							})
+							.catch(() => console.log('Err between col'));
+					}
+					Columns.find({})
+						.then((response) => res.send(response))
+						.catch((err) => console.log(err));
+				})
+				.catch(() => console.log('Err in col'));
 		} else {
-			start.tasksId.splice(source.index, 1);
-
-			finish.tasksId.splice(destination.index, 0, draggableId);
-		}
-
-		Columns.findByIdAndUpdate(start._id, { tasksId: start.tasksId })
-			.then(() => console.log('Changed in col'))
-			.catch(() => console.log('Err in col'));
-		if (start !== finish) {
-			Columns.findByIdAndUpdate(finish._id, { tasksId: finish.tasksId })
-				.then(() => console.log('Changed between col'))
-				.catch(() => console.log('Err between col'));
+			res.status(500).send('Err');
 		}
 	}
 
 	// [DELETE] //DONE
 	async destroy(req, res) {
+		let { columnId, taskId } = req.body;
 		Tasks.findByIdAndDelete(req.params.id)
 			.then(() => console.log('delete success'))
 			.catch(() => console.log('fail'));
-		let columns = await Columns.find({});
-		let tmpTasksId;
-		let id;
-		columns.map((column) => {
-			let tmpIndex = column.tasksId.indexOf(req.params.id);
-			if (tmpIndex >= 0) {
-				id = column._id;
-				column.tasksId.splice(tmpIndex, 1);
-				tmpTasksId = column.tasksId;
+
+		Columns.findOne({ _id: columnId }, function (error, doc) {
+			if (error) {
+				res.status(500).send('Error');
+			} else if (doc) {
+				var records = { records: doc };
+				var idx = doc.tasksId
+					? doc.tasksId.findIndex((item) => item.id == taskId)
+					: -1;
+				if (idx !== -1) {
+					doc.tasksId.splice(idx, 1);
+					doc.save(function (error) {
+						if (error) {
+							res.status(500).send('Error');
+						} else {
+							res.send(records);
+						}
+					});
+					return;
+				}
 			}
+			res.status(500).send('Error');
 		});
-		Columns.findByIdAndUpdate(id, {
-			tasksId: tmpTasksId,
-		})
-			.then((res) => console.log('Updated', res))
-			.catch(() => console.log('Fail'));
 	}
 }
 
