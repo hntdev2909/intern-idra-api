@@ -2,6 +2,7 @@ const todoListRouter = require('./todoList');
 const countdownRouter = require('./countdown');
 const taskManageRouter = require('./taskManage');
 const homepageRouter = require('./homepage');
+const userRouter = require('./form');
 
 function route(app) {
 	app.use('/todolist', todoListRouter);
@@ -9,6 +10,8 @@ function route(app) {
 	app.use('/countdown', countdownRouter);
 
 	app.use('/taskmanage', taskManageRouter);
+
+	app.use('/user', userRouter);
 
 	app.use('/', homepageRouter);
 }
