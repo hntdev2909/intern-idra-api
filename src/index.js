@@ -18,7 +18,7 @@ job.start();
 const db = require('./config/db');
 const app = express();
 
-require('dotenv').config({ path: __dirname + '/./.env' });
+require('dotenv').config({ path: __dirname + '/../.env' });
 const route = require('./routes');
 
 // Config Cors
@@ -26,10 +26,7 @@ app.use(cors());
 
 app.use(function (req, res, next) {
 	// res.header('Access-Control-Allow-Origin', 'http://localhost:5000/manage'); // update to match the domain you will make the request from
-	res.header(
-		'Access-Control-Allow-Headers',
-		'Origin, X-Requested-With, Content-Type, Accept'
-	);
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 	next();
 });
 
